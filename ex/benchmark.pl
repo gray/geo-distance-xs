@@ -2,22 +2,32 @@
 use strict;
 use warnings;
 
-use Benchmark qw(cmpthese timethis);
+use Benchmark qw(cmpthese timethese);
 use Geo::Distance;
 
 my @coord = (-118.243103, 34.159545, -73.987427, 40.853293);
 
 my $geo = Geo::Distance->new;
-
 sub geo {
-    $geo->distance(mile => @coord);
+    my $d = $geo->distance(mile => @coord)
+};
+
+# Need this mess so timethese can be used.
+{
+    my $orig_timethis_sub = \&Benchmark::timethis;
+    no warnings 'redefine';
+    *Benchmark::timethis = sub {
+        if ($_[2] eq 'xs') {
+            eval 'use Geo::Distance::XS';
+            *Benchmark::timethis = $orig_timethis_sub;
+        }
+        $orig_timethis_sub->(@_);            
+    };
 }
 
-my %benchmarks;
-$benchmarks{perl} = timethis -1, \&geo, '', 'none';
+my $benchmarks = timethese -1, {
+    perl => \&geo,
+    xs   => \&geo,
+};
 
-require Geo::Distance::XS;
-
-$benchmarks{xs} = timethis -1, \&geo, '', 'none';
-
-cmpthese  \%benchmarks;
+cmpthese $benchmarks;
