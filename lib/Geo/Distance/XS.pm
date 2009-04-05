@@ -18,14 +18,22 @@ use Geo::Distance;
 
 no warnings qw(redefine);
 
+my $orig_distance_sub = \&Geo::Distance::distance;
 *Geo::Distance::distance = \&distance_hsin;
 
 # Avoids checking the formula type on every call to distance.
-my $old_formula_sub = \&Geo::Distance::formula;
+my $orig_formula_sub = \&Geo::Distance::formula;
 *Geo::Distance::formula = sub {
-    $old_formula_sub->(@_);
+    $orig_formula_sub->(@_);
     *Geo::Distance::distance = \&{'distance_' . $_[0]->{formula}};
 };
+
+# Fall back to pure perl after calling 'no use Geo::Distance::XS'.
+sub unimport {
+    *Geo::Distance::formula = $orig_formula_sub;
+    *Geo::Distance::distance = $orig_distance_sub;
+}
+
 
 1;
 
@@ -54,9 +62,12 @@ This distribution contains a benchmarking script which compares
 C<Geo::Distance::XS> with C<Geo::Distance>.  These are the results on a
 MacBook 2GHz with Perl 5.8.9:
 
-              Rate  perl    xs
-    perl   66990/s    --  -93%
-    xs   1017940/s 1420%    --
+    Benchmark: running perl, xs for at least 1 CPU seconds...
+          perl:  1 wallclock secs ( 1.09 usr +  0.01 sys =  1.10 CPU) @ 65162.73/s (n=71679)
+            xs:  0 wallclock secs ( 1.12 usr + -0.01 sys =  1.11 CPU) @ 953745.95/s (n=1058658)
+             Rate  perl    xs
+    perl  65163/s    --  -93%
+    xs   953746/s 1364%    --
 
 =head1 SEE ALSO
 
