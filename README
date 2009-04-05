@@ -1,7 +1,7 @@
 Geo::Distance::XS
 =================
 
-This module is make Geo::Distance faster and more accurate.
+This module speeds up Geo::Distance.
 
 INSTALLATION
 
