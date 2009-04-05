@@ -14,15 +14,18 @@ eval {
     DynaLoader::bootstrap(__PACKAGE__, $VERSION);
 };
 
-require Geo::Distance;
+use Geo::Distance;
+
 no warnings qw(redefine);
 
-*Geo::Distance::distance = sub {
-    my($self,$unit,$lon1,$lat1,$lon2,$lat2) = @_;
-    croak('Unkown unit type "'.$unit.'"') unless($unit = $self->{units}->{$unit});
-    return $unit * hsin($lat1, $lon1, $lat2, $lon2);
-};
+*Geo::Distance::distance = \&distance_hsin;
 
+# Avoids checking the formula type on every call to distance.
+my $old_formula_sub = \&Geo::Distance::formula;
+*Geo::Distance::formula = sub {
+    $old_formula_sub->(@_);
+    *Geo::Distance::distance = \&{'distance_' . $_[0]->{formula}};
+};
 
 1;
 
@@ -41,11 +44,9 @@ Geo::Distance::XS - speed up Geo::Distance
 
 =head1 DESCRIPTION
 
-The C<Geo::Distance::XS> module provides a faster implementation of the
-distance calculations in C.
-
-This module is a subclass of C<Geo::Distance>- refer to the documentation
-for that module.
+The C<Geo::Distance::XS> module provides faster C implementations of the
+distance calculations found in C<Geo::Distance>.  See the documentation for
+that module for usage.
 
 =head1 PERFORMANCE
 
@@ -53,9 +54,9 @@ This distribution contains a benchmarking script which compares
 C<Geo::Distance::XS> with C<Geo::Distance>.  These are the results on a
 MacBook 2GHz with Perl 5.8.9:
 
-             Rate perl   xs
-    perl  67622/s   -- -81%
-    xs   360654/s 433%   --
+              Rate  perl    xs
+    perl   66990/s    --  -93%
+    xs   1017940/s 1420%    --
 
 =head1 SEE ALSO
 
