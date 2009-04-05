@@ -1,0 +1,29 @@
+Geo::Distance::XS
+=================
+
+This module is make Geo::Distance faster and more accurate.
+
+INSTALLATION
+
+To install this module type the following:
+
+    perl Makefile.PL
+    make
+    make test
+    make install
+
+DEPENDENCIES
+
+This module requires these other modules and libraries:
+
+    Geo::Distance
+    Test::More
+
+A C compiler is required to build this module.
+
+COPYRIGHT AND LICENCE
+
+Copyright (C) 2009 by gray <gray@cpan.org>
+
+This library is free software; you can redistribute it and/or modify it under
+the same terms as Perl itself.
