@@ -16,20 +16,31 @@ eval {
 
 use Geo::Distance;
 
-no warnings qw(redefine);
+my ($orig_distance_sub, $orig_formula_sub);
+BEGIN {
+    $orig_distance_sub = \&Geo::Distance::distance;
+    $orig_formula_sub = \&Geo::Distance::formula;
+}
 
-my $orig_distance_sub = \&Geo::Distance::distance;
-*Geo::Distance::distance = \&distance_hsin;
+sub import {
+    no warnings qw(redefine);
 
-# Avoids checking the formula type on every call to distance.
-my $orig_formula_sub = \&Geo::Distance::formula;
-*Geo::Distance::formula = sub {
-    $orig_formula_sub->(@_);
-    *Geo::Distance::distance = \&{'distance_' . $_[0]->{formula}};
-};
+    # Ensure the formula type is the same before and after import is called.
+    *Geo::Distance::distance = sub {
+        *Geo::Distance::distance = \&{'distance_' . $_[0]->{formula}};
+        Geo::Distance::distance(@_);
+    };
 
-# Fall back to pure perl after calling 'no use Geo::Distance::XS'.
+    *Geo::Distance::formula = sub {
+        $orig_formula_sub->(@_);
+        *Geo::Distance::distance = \&{'distance_' . $_[0]->{formula}};
+    };
+}
+
+# Fall back to pure perl after calling 'no Geo::Distance::XS'.
 sub unimport {
+    no warnings qw(redefine);
+
     *Geo::Distance::formula = $orig_formula_sub;
     *Geo::Distance::distance = $orig_distance_sub;
 }
