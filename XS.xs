@@ -38,8 +38,9 @@ double cosines (double lat1, double lon1, double lat2, double lon2) {
 
 double polar (double lat1, double lon1, double lat2, double lon2) {
     double a = M_PI_2 - lat1 * DEG_RADS;
-    double b = M_PI_2 - lat1 * DEG_RADS;
-    double d = sqrt(pow(a, 2) + pow(b, 2) - 2 * a * b * cos(lon2 - lon1));
+    double b = M_PI_2 - lat2 * DEG_RADS;
+    double dlon = (lon2 - lon1) * DEG_RADS;
+    double d = sqrt(pow(a, 2) + pow(b, 2) - 2 * a * b * cos(dlon));
     return d;
 }
 
@@ -53,8 +54,8 @@ double great_circle (double lat1, double lon1, double lat2 , double lon2) {
 }
 
 double vincenty (double lat1, double lon1, double lat2 , double lon2) {
-    double d = 1.0;
-    return d;
+    /* TODO */
+    return 1.0;
 }
 
 /* TODO: add more guards against unexpected data */
