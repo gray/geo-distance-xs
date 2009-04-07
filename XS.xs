@@ -53,9 +53,64 @@ double great_circle (double lat1, double lon1, double lat2 , double lon2) {
     return d;
 }
 
+/* This doesn't seem as accurate as it should be */
 double vincenty (double lat1, double lon1, double lat2 , double lon2) {
-    /* TODO */
-    return 1.0;
+    const double MAJOR_RADIUS = 6378137.0 / 6370997.0;
+    const double MINOR_RADIUS = 6356752.3142 / 6370997.0;
+    const double FLATTENING = (MAJOR_RADIUS - MINOR_RADIUS) / MAJOR_RADIUS;
+
+    double dlon = (lon2 - lon1) * DEG_RADS;
+    double u1 = atan((1 - FLATTENING) * tan(lat1 * DEG_RADS));
+    double u2 = atan((1 - FLATTENING) * tan(lat2 * DEG_RADS));
+    double sin_u1 = sin(u1), cos_u1 = cos(u1);
+    double sin_u2 = sin(u2), cos_u2 = cos(u2);
+
+    double lambda = dlon, lambda_p = 2 * M_PI;
+    double iter_limit = 100;
+
+    double sin_sigma, cos_sigma;
+    double sigma;
+    double cos_sq_alpha, cos_sigma_m;
+
+    while (abs(lambda - lambda_p) > 1e-12 && iter_limit-- > 0) {
+        double sin_lambda = sin(lambda);
+        double cos_lambda = cos(lambda);
+        sin_sigma = sqrt((cos_u2 * sin_lambda) * (cos_u2 * sin_lambda) +
+                         (cos_u1 * sin_u2 - sin_u1 * cos_u2 * cos_lambda) *
+                         (cos_u1 * sin_u2-sin_u1 * cos_u2 * cos_lambda));
+        if (sin_sigma == 0) {
+            return 0;
+        }
+        cos_sigma = sin_u1 * sin_u2 + cos_u1 * cos_u2 * cos_lambda;
+        sigma = atan2(sin_sigma, cos_sigma);
+        double alpha = asin(cos_u1 * cos_u2 * sin_lambda / sin_sigma);
+        cos_sq_alpha = cos(alpha) * cos(alpha);
+        cos_sigma_m = cos_sigma - 2 * sin_u1 * sin_u2 / cos_sq_alpha;
+        if (cos_sigma_m == NAN) {
+            cos_sigma_m = 0;
+        }
+        double c = FLATTENING / 16 * cos_sq_alpha *
+                   (4 + FLATTENING * (4 - 3 * cos_sq_alpha));
+        lambda_p = lambda;
+        lambda = dlon + (1 - c) * FLATTENING * sin(alpha) * (sigma + c *
+                 sin_sigma * (cos_sigma_m + c * cos_sigma * (-1 + 2 *
+                 cos_sigma_m * cos_sigma_m)));
+    }
+    if (iter_limit == 0) {
+        return 0;
+    }
+
+    double u_sq = cos_sq_alpha * (MAJOR_RADIUS * MAJOR_RADIUS - MINOR_RADIUS *
+                  MINOR_RADIUS) / (MINOR_RADIUS * MINOR_RADIUS);
+    double a = 1 + u_sq / 16384 * (4096 + u_sq * (-768 + u_sq *
+               (320 - 175 * u_sq)));
+    double b = u_sq / 1024 * (256 + u_sq * (-128 + u_sq * (74 - 47 * u_sq)));
+    double delta_sigma = b * sin_sigma * (cos_sigma_m + b / 4 * (cos_sigma *
+                         (-1 + 2 * cos_sigma_m * cos_sigma_m) - b / 6 *
+                         cos_sigma_m * (- 3 + 4 * sin_sigma * sin_sigma) *
+                         (-3 + 4 * cos_sigma_m * cos_sigma_m)));
+    double d = MINOR_RADIUS * a * (sigma - delta_sigma);
+    return d;
 }
 
 /* TODO: add more guards against unexpected data */
@@ -66,11 +121,11 @@ double _count_units (SV *self, SV *unit) {
     char *name = SvPV(unit, len);
 
     SV **svp = hv_fetchs((HV*)SvRV(self), "units", 0);
-    if (! svp) croak("Unknown unit type \"%s\"", unit);
+    if (! svp) croak("Unknown unit type \"%s\"", name);
 
     HV *hash = (HV *)SvRV(*svp);
     svp = hv_fetch(hash, name, len, 0);
-    if (! svp) croak("Unknown unit type \"%s\"", unit);
+    if (! svp) croak("Unknown unit type \"%s\"", name);
 
     return SvNV(*svp);
 }
