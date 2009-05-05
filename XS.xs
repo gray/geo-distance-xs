@@ -86,7 +86,7 @@ double vincenty (double lat1, double lon1, double lat2 , double lon2) {
         double alpha = asin(cos_u1 * cos_u2 * sin_lambda / sin_sigma);
         cos_sq_alpha = cos(alpha) * cos(alpha);
         cos_sigma_m = cos_sigma - 2 * sin_u1 * sin_u2 / cos_sq_alpha;
-        if (cos_sigma_m == NAN) {
+        if (isnan(cos_sigma_m)) {
             cos_sigma_m = 0;
         }
         double c = FLATTENING / 16 * cos_sq_alpha *
