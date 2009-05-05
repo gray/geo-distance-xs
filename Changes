@@ -1,7 +1,7 @@
 Revision history for Geo-Distance-XS
 
 0.02 Tue May 5 13:55:49 UTC 2009
-    - (Hopefully) fixed compilation under Solaris by making test for Nan more
+    - (Hopefully) fixed compilation under Solaris by making test for NaN more
       portable.
 
 0.01  Sat Apr 4 16:59:27 UTC 2009
