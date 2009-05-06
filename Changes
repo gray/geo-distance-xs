@@ -1,5 +1,8 @@
 Revision history for Geo-Distance-XS
 
+0.03 Wed May 6 07:16:34 UTC 2009
+    - Added support for non-C99 compilers (Taro Nishino)
+
 0.02 Tue May 5 13:55:49 UTC 2009
     - (Hopefully) fixed compilation under Solaris by making test for NaN more
       portable.

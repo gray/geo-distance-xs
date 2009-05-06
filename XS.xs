@@ -26,13 +26,14 @@ double haversine (double lat1, double lon1, double lat2, double lon2) {
 }
 
 double cosines (double lat1, double lon1, double lat2, double lon2) {
+    double a, b, d;
     lon1 = lon1 * DEG_RADS;
     lat1 = lat1 * DEG_RADS;
     lon2 = lon2 * DEG_RADS;
     lat2 = lat2 * DEG_RADS;
-    double a = sin(lat1) * sin(lat2);
-    double b = cos(lat1) * cos(lat2) * cos(lon2 - lon1);
-    double d = acos(a + b);
+    a = sin(lat1) * sin(lat2);
+    b = cos(lat1) * cos(lat2) * cos(lon2 - lon1);
+    d = acos(a + b);
     return d;
 }
 
@@ -71,8 +72,10 @@ double vincenty (double lat1, double lon1, double lat2 , double lon2) {
     double sin_sigma, cos_sigma;
     double sigma;
     double cos_sq_alpha, cos_sigma_m;
+    double u_sq, a, b, delta_sigma, d;
 
     while (abs(lambda - lambda_p) > 1e-12 && iter_limit-- > 0) {
+        double alpha, c;
         double sin_lambda = sin(lambda);
         double cos_lambda = cos(lambda);
         sin_sigma = sqrt((cos_u2 * sin_lambda) * (cos_u2 * sin_lambda) +
@@ -83,14 +86,14 @@ double vincenty (double lat1, double lon1, double lat2 , double lon2) {
         }
         cos_sigma = sin_u1 * sin_u2 + cos_u1 * cos_u2 * cos_lambda;
         sigma = atan2(sin_sigma, cos_sigma);
-        double alpha = asin(cos_u1 * cos_u2 * sin_lambda / sin_sigma);
+        alpha = asin(cos_u1 * cos_u2 * sin_lambda / sin_sigma);
         cos_sq_alpha = cos(alpha) * cos(alpha);
         cos_sigma_m = cos_sigma - 2 * sin_u1 * sin_u2 / cos_sq_alpha;
         if (isnan(cos_sigma_m)) {
             cos_sigma_m = 0;
         }
-        double c = FLATTENING / 16 * cos_sq_alpha *
-                   (4 + FLATTENING * (4 - 3 * cos_sq_alpha));
+        c = FLATTENING / 16 * cos_sq_alpha *
+            (4 + FLATTENING * (4 - 3 * cos_sq_alpha));
         lambda_p = lambda;
         lambda = dlon + (1 - c) * FLATTENING * sin(alpha) * (sigma + c *
                  sin_sigma * (cos_sigma_m + c * cos_sigma * (-1 + 2 *
@@ -100,16 +103,16 @@ double vincenty (double lat1, double lon1, double lat2 , double lon2) {
         return 0;
     }
 
-    double u_sq = cos_sq_alpha * (MAJOR_RADIUS * MAJOR_RADIUS - MINOR_RADIUS *
-                  MINOR_RADIUS) / (MINOR_RADIUS * MINOR_RADIUS);
-    double a = 1 + u_sq / 16384 * (4096 + u_sq * (-768 + u_sq *
+    u_sq = cos_sq_alpha * (MAJOR_RADIUS * MAJOR_RADIUS - MINOR_RADIUS *
+           MINOR_RADIUS) / (MINOR_RADIUS * MINOR_RADIUS);
+    a = 1 + u_sq / 16384 * (4096 + u_sq * (-768 + u_sq *
                (320 - 175 * u_sq)));
-    double b = u_sq / 1024 * (256 + u_sq * (-128 + u_sq * (74 - 47 * u_sq)));
-    double delta_sigma = b * sin_sigma * (cos_sigma_m + b / 4 * (cos_sigma *
-                         (-1 + 2 * cos_sigma_m * cos_sigma_m) - b / 6 *
-                         cos_sigma_m * (- 3 + 4 * sin_sigma * sin_sigma) *
-                         (-3 + 4 * cos_sigma_m * cos_sigma_m)));
-    double d = MINOR_RADIUS * a * (sigma - delta_sigma);
+    b = u_sq / 1024 * (256 + u_sq * (-128 + u_sq * (74 - 47 * u_sq)));
+    delta_sigma = b * sin_sigma * (cos_sigma_m + b / 4 * (cos_sigma *
+                  (-1 + 2 * cos_sigma_m * cos_sigma_m) - b / 6 *
+                  cos_sigma_m * (- 3 + 4 * sin_sigma * sin_sigma) *
+                  (-3 + 4 * cos_sigma_m * cos_sigma_m)));
+    d = MINOR_RADIUS * a * (sigma - delta_sigma);
     return d;
 }
 
@@ -119,11 +122,12 @@ double _count_units (SV *self, SV *unit) {
 
     STRLEN len;
     char *name = SvPV(unit, len);
+    HV *hash;
 
-    SV **svp = hv_fetchs((HV*)SvRV(self), "units", 0);
+    SV **svp = hv_fetchs((HV *)SvRV(self), "units", 0);
     if (! svp) croak("Unknown unit type \"%s\"", name);
 
-    HV *hash = (HV *)SvRV(*svp);
+    hash = (HV *)SvRV(*svp);
     svp = hv_fetch(hash, name, len, 0);
     if (! svp) croak("Unknown unit type \"%s\"", name);
 
