@@ -19,7 +19,7 @@ use Geo::Distance;
 my ($orig_distance_sub, $orig_formula_sub);
 BEGIN {
     $orig_distance_sub = \&Geo::Distance::distance;
-    $orig_formula_sub = \&Geo::Distance::formula;
+    $orig_formula_sub  = \&Geo::Distance::formula;
 }
 
 sub import {
@@ -41,7 +41,7 @@ sub import {
 sub unimport {
     no warnings qw(redefine);
 
-    *Geo::Distance::formula = $orig_formula_sub;
+    *Geo::Distance::formula  = $orig_formula_sub;
     *Geo::Distance::distance = $orig_distance_sub;
 }
 
@@ -66,6 +66,9 @@ Geo::Distance::XS - speed up Geo::Distance
 The C<Geo::Distance::XS> module provides faster C implementations of the
 distance calculations found in C<Geo::Distance>.  See the documentation for
 that module for usage.
+
+NOTE: As of version 0.13, Geo::Distance automatically uses this module if
+it is installed.
 
 =head1 PERFORMANCE
 
@@ -146,7 +149,7 @@ L<Geo::Distance>
 =head1 REQUESTS AND BUGS
 
 Please report any bugs or feature requests to 
-L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Geo-Distance-XS>. I will be
+L<http://rt.cpan.org/Public/Bug/Report.html?Queue=Geo-Distance-XS>. I will be
 notified, and then you'll automatically be notified of progress on your bug as
 I make changes.
 
@@ -160,6 +163,10 @@ You can also look for information at:
 
 =over
 
+=item * GitHub Source Repository
+
+L<http://github.com/gray/geo-coder-xs>
+
 =item * AnnoCPAN: Annotated CPAN documentation
 
 L<http://annocpan.org/dist/Geo-Distance-XS>
@@ -170,7 +177,7 @@ L<http://cpanratings.perl.org/d/Geo-Distance-XS>
 
 =item * RT: CPAN's request tracker
 
-L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=Geo-Distance-XS>
+L<http://rt.cpan.org/Public/Dist/Display.html?Name=Geo-Distance-XS>
 
 =item * Search CPAN
 
