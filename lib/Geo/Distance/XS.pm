@@ -27,13 +27,13 @@ sub import {
 
     # Ensure the formula type is the same before and after import is called.
     *Geo::Distance::distance = sub {
-        *Geo::Distance::distance = \&{'distance_' . $_[0]->{formula}};
+        *Geo::Distance::distance = \&{'_distance_' . $_[0]->{formula}};
         Geo::Distance::distance(@_);
     };
 
     *Geo::Distance::formula = sub {
         $orig_formula_sub->(@_);
-        *Geo::Distance::distance = \&{'distance_' . $_[0]->{formula}};
+        *Geo::Distance::distance = \&{'_distance_' . $_[0]->{formula}};
     };
 }
 
