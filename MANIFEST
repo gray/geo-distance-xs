@@ -9,5 +9,7 @@ t/00_load.t
 t/01_new.t
 XS.xs
 xt/kwalitee.t
+xt/perlcritic.t
+xt/perlcriticrc
 xt/pod.t
 xt/pod_coverage.t
