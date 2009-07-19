@@ -165,7 +165,7 @@ You can also look for information at:
 
 =item * GitHub Source Repository
 
-L<http://github.com/gray/geo-coder-xs>
+L<http://github.com/gray/geo-distance-xs>
 
 =item * AnnoCPAN: Annotated CPAN documentation
 
