@@ -1,3 +1,4 @@
+.perlcriticrc
 Changes
 ex/benchmark.pl
 lib/Geo/Distance/XS.pm
@@ -10,6 +11,5 @@ t/01_new.t
 XS.xs
 xt/kwalitee.t
 xt/perlcritic.t
-xt/perlcriticrc
 xt/pod.t
 xt/pod_coverage.t
