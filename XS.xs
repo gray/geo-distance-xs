@@ -16,6 +16,29 @@
 
 const double DEG_RADS = M_PI / 180.0;
 
+static void my_croak(char* pat, ...) {
+    va_list args;
+    SV *error_sv;
+
+    dTHX;
+    dSP;
+
+    error_sv = newSV(0);
+
+    va_start(args, pat);
+    sv_vsetpvf(error_sv, pat, &args);
+    va_end(args);
+
+    ENTER;
+    SAVETMPS;
+    PUSHMARK(SP);
+    XPUSHs(sv_2mortal(error_sv));
+    PUTBACK;
+    call_pv("Carp::croak", G_VOID | G_DISCARD);
+    FREETMPS;
+    LEAVE;
+}
+
 double haversine (double lat1, double lon1, double lat2, double lon2) {
     double dlon = (lon2 - lon1) * DEG_RADS;
     double dlat = (lat2 - lat1) * DEG_RADS;
@@ -125,15 +148,14 @@ double _count_units (SV *self, SV *unit) {
     HV *hash;
 
     SV **svp = hv_fetchs((HV *)SvRV(self), "units", 0);
-    if (! svp) croak("Unknown unit type \"%s\"", name);
+    if (! svp) my_croak("Unknown unit type \"%s\"", name);
 
     hash = (HV *)SvRV(*svp);
     svp = hv_fetch(hash, name, len, 0);
-    if (! svp) croak("Unknown unit type \"%s\"", name);
+    if (! svp) my_croak("Unknown unit type \"%s\"", name);
 
     return SvNV(*svp);
 }
-
 
 MODULE = Geo::Distance::XS    PACKAGE = Geo::Distance::XS
 
