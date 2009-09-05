@@ -3,7 +3,8 @@ package Geo::Distance::XS;
 use strict;
 use warnings;
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
+$VERSION = eval $VERSION;
 
 eval {
     require XSLoader;
