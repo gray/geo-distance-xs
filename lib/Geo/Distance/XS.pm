@@ -32,6 +32,7 @@ sub import {
     };
 
     *Geo::Distance::formula = sub {
+        local $Carp::CarpLevel = 1;
         $orig_formula_sub->(@_);
         *Geo::Distance::distance = \&{'_distance_' . $_[0]->{formula}};
     };
