@@ -16,7 +16,8 @@
 
 const double DEG_RADS = M_PI / 180.0;
 
-static void my_croak(char* pat, ...) {
+static void
+my_croak (char* pat, ...) {
     va_list args;
     SV *error_sv;
 
@@ -39,7 +40,8 @@ static void my_croak(char* pat, ...) {
     LEAVE;
 }
 
-double haversine (double lat1, double lon1, double lat2, double lon2) {
+double
+haversine (double lat1, double lon1, double lat2, double lon2) {
     double dlon = (lon2 - lon1) * DEG_RADS;
     double dlat = (lat2 - lat1) * DEG_RADS;
     double a = pow(sin(dlat / 2), 2) + cos(lat1 * DEG_RADS) *
@@ -48,7 +50,8 @@ double haversine (double lat1, double lon1, double lat2, double lon2) {
     return d;
 }
 
-double cosines (double lat1, double lon1, double lat2, double lon2) {
+double
+cosines (double lat1, double lon1, double lat2, double lon2) {
     double a, b, d;
     lon1 = lon1 * DEG_RADS;
     lat1 = lat1 * DEG_RADS;
@@ -60,7 +63,8 @@ double cosines (double lat1, double lon1, double lat2, double lon2) {
     return d;
 }
 
-double polar (double lat1, double lon1, double lat2, double lon2) {
+double
+polar (double lat1, double lon1, double lat2, double lon2) {
     double a = M_PI_2 - lat1 * DEG_RADS;
     double b = M_PI_2 - lat2 * DEG_RADS;
     double dlon = (lon2 - lon1) * DEG_RADS;
@@ -68,7 +72,8 @@ double polar (double lat1, double lon1, double lat2, double lon2) {
     return d;
 }
 
-double great_circle (double lat1, double lon1, double lat2 , double lon2) {
+double
+great_circle (double lat1, double lon1, double lat2 , double lon2) {
     double dlon = (lon1 - lon2) * DEG_RADS;
     double dlat = (lat1 - lat2) * DEG_RADS;
     double a = pow(sin(dlat / 2), 2) + cos(lat1 * DEG_RADS) *
@@ -78,7 +83,8 @@ double great_circle (double lat1, double lon1, double lat2 , double lon2) {
 }
 
 /* This doesn't seem as accurate as it should be */
-double vincenty (double lat1, double lon1, double lat2 , double lon2) {
+double
+vincenty (double lat1, double lon1, double lat2 , double lon2) {
     const double MAJOR_RADIUS = 6378137.0 / 6370997.0;
     const double MINOR_RADIUS = 6356752.3142 / 6370997.0;
     const double FLATTENING = (MAJOR_RADIUS - MINOR_RADIUS) / MAJOR_RADIUS;
@@ -140,7 +146,8 @@ double vincenty (double lat1, double lon1, double lat2 , double lon2) {
 }
 
 /* TODO: add more guards against unexpected data */
-double _count_units (SV *self, SV *unit) {
+double
+_count_units (SV *self, SV *unit) {
     dTHX;
 
     STRLEN len;
