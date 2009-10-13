@@ -1,4 +1,3 @@
-.perlcriticrc
 Changes
 ex/benchmark.pl
 lib/Geo/Distance/XS.pm
@@ -8,8 +7,14 @@ ppport.h
 README
 t/00_load.t
 t/01_new.t
+t/02_new_pp.t
+t/03_methods.t
 XS.xs
 xt/kwalitee.t
+xt/leaktrace.t
 xt/perlcritic.t
+xt/perlcriticrc
 xt/pod.t
 xt/pod_coverage.t
+xt/portability_filenames.t
+xt/valgrind.t
