@@ -1,5 +1,11 @@
 Revision history for Geo-Distance-XS
 
+0.06  Tue Oct 13 17:52:08 UTC 2009
+    - Added more tests.
+    - Added leaktrace, valgrind and file portability author tests.
+    - Renamed some files for better portability.
+    - Added authortest Makefile target and added it to the disttest target.
+
 0.05  Sat Sep 5 18:23:49 UTC 2009
     - Adjusted Carp level in redefined sub.
     - Used Carp (from within XS) so error messages are more useful and
