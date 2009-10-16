@@ -1,5 +1,8 @@
 Revision history for Geo-Distance-XS
 
+0.07  Fri Oct 16 17:00:29 UTC 2009
+    - RT #50545: Set minimum required version of Geo::Distance to 0.16.
+
 0.06  Tue Oct 13 17:52:08 UTC 2009
     - Added more tests.
     - Added leaktrace, valgrind and file portability author tests.
@@ -13,7 +16,7 @@ Revision history for Geo-Distance-XS
 
 0.04  Wed Jul 15 07:49:07 UTC 2009
     - Noted in pod that Geo::Distance now calls this module if installed.
-    - Moved author tests into separate directory.    
+    - Moved author tests into separate directory.
     - Updated ppport.h.
     - Added link to repository.
 

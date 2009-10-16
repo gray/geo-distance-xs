@@ -10,7 +10,7 @@ my %conf = (
     ABSTRACT_FROM => 'lib/Geo/Distance/XS.pm',
     LIBS          => ['-lm'],
     PREREQ_PM     => {
-        'Geo::Distance' => 0,
+        'Geo::Distance' => 0.16,
         'Test::More'    => 0,
     },
     META_MERGE    => {

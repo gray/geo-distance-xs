@@ -2,8 +2,8 @@ use strict;
 use warnings;
 use Test::More tests => 2;
 
-eval "use Geo::Distance 0.13; 1" or do {
-    plan skip_all => 'Geo::Distance >= 0.13 is not installed.';
+eval "use Geo::Distance 0.16; 1" or do {
+    plan skip_all => 'Geo::Distance >= 0.16 is not installed.';
 };
 
 my $geo = Geo::Distance->new;
