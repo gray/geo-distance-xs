@@ -1,5 +1,5 @@
-Geo::Distance::XS
-=================
+Geo-Distance-XS
+===============
 
 This module speeds up Geo::Distance.
 
@@ -23,7 +23,7 @@ A C compiler is required to build this module.
 
 COPYRIGHT AND LICENCE
 
-Copyright (C) 2009 by gray <gray@cpan.org>
+Copyright (C) 2009-2010 by gray <gray@cpan.org>
 
-This library is free software; you can redistribute it and/or modify it under
-the same terms as Perl itself.
+This library is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.

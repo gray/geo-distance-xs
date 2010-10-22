@@ -3,28 +3,31 @@ use warnings;
 use ExtUtils::MakeMaker;
 
 my %conf = (
-    NAME          => 'Geo::Distance::XS',
-    AUTHOR        => 'gray <gray@cpan.org>',
-    LICENSE       => 'perl',
-    VERSION_FROM  => 'lib/Geo/Distance/XS.pm',
-    ABSTRACT_FROM => 'lib/Geo/Distance/XS.pm',
-    LIBS          => ['-lm'],
-    PREREQ_PM     => {
+    NAME           => 'Geo::Distance::XS',
+    AUTHOR         => 'gray <gray@cpan.org>',
+    LICENSE        => 'perl',
+    VERSION_FROM   => 'lib/Geo/Distance/XS.pm',
+    ABSTRACT_FROM  => 'lib/Geo/Distance/XS.pm',
+    LIBS           => ['-lm'],
+    BUILD_REQUIRES => { 'Test::More' => 0.82, },
+    PREREQ_PM      => {
         'Geo::Distance' => 0.16,
         'Test::More'    => 0,
     },
-    META_MERGE    => {
+    META_MERGE     => {
         resources => {
             repository => 'http://github.com/gray/geo-distance-xs',
         }
     },
-    dist          => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
-    clean         => { FILES => 'Geo-Distance-XS-*' },
+    dist           => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
+    clean          => { FILES => 'Geo-Distance-XS-*' },
 );
 
-unless (eval { ExtUtils::MakeMaker->VERSION(6.46) }) {
-    delete $conf{META_MERGE};
-}
+my $eumm_version=$ExtUtils::MakeMaker::VERSION;
+delete $conf{META_MERGE} if $eumm_version < 6.46;
+$conf{PREREQ_PM} = {
+    %{ $conf{PREREQ_PM} || {} }, %{ delete $conf{BUILD_REQUIRES} },
+} if ($conf{BUILD_REQUIRES} and $eumm_version < 6.5503);
 
 WriteMakefile(%conf);
 
