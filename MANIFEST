@@ -18,3 +18,4 @@ xt/pod.t
 xt/pod_coverage.t
 xt/portability_filenames.t
 xt/valgrind.t
+xt/vars.t

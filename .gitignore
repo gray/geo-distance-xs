@@ -1,6 +1,7 @@
 Geo-Distance-XS-*
 Makefile
 Makefile.old
+MANIFEST.bak
 XS.bs
 XS.c
 XS.o
