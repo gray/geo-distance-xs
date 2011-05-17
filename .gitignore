@@ -2,6 +2,7 @@ Geo-Distance-XS-*
 Makefile
 Makefile.old
 MANIFEST.bak
+MYMETA.yml
 XS.bs
 XS.c
 XS.o
