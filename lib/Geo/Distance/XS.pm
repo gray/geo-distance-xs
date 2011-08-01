@@ -3,20 +3,14 @@ package Geo::Distance::XS;
 use strict;
 use warnings;
 
+use Geo::Distance;
+use XSLoader;
+
 our $VERSION    = '0.08';
 our $XS_VERSION = $VERSION;
 $VERSION = eval $VERSION;
 
-eval {
-    require XSLoader;
-    XSLoader::load(__PACKAGE__, $XS_VERSION);
-    1;
-} or do {
-    require DynaLoader;
-    DynaLoader::bootstrap(__PACKAGE__, $XS_VERSION);
-};
-
-use Geo::Distance;
+XSLoader::load(__PACKAGE__, $XS_VERSION);
 
 my ($orig_distance_sub, $orig_formula_sub);
 BEGIN {

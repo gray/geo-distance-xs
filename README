@@ -18,6 +18,7 @@ This module requires these other modules and libraries:
 
     Geo::Distance
     Test::More
+    XSLoader
 
 A C compiler is required to build this module.
 

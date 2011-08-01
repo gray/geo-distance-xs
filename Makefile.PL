@@ -12,6 +12,7 @@ my %conf = (
     BUILD_REQUIRES => { 'Test::More' => 0.82, },
     PREREQ_PM      => {
         'Geo::Distance' => 0.16,
+        XSLoader        => 0,
     },
     META_MERGE     => {
         resources => {
