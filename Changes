@@ -1,5 +1,8 @@
 Revision history for Geo-Distance-XS
 
+0.09  Mon Aug  1 21:49:37 UTC 2011
+    - Required XSLoader; stopped falling back to DynaLoader.
+
 0.08  Fri Oct 22 03:44:02 UTC 2010
     - Added GIS::Distance::Fast to the benchmark.
 
