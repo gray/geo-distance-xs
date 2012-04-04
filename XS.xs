@@ -42,24 +42,25 @@ my_croak (char* pat, ...) {
 
 double
 haversine (double lat1, double lon1, double lat2, double lon2) {
-    double dlon = (lon2 - lon1) * DEG_RADS;
-    double dlat = (lat2 - lat1) * DEG_RADS;
-    double a = pow(sin(dlat / 2), 2) + cos(lat1 * DEG_RADS) *
-               cos(lat2 * DEG_RADS) * pow(sin(dlon / 2), 2);
-    double d = 2 * atan2(sqrt(a), sqrt(1 - a));
+    lat1 *= DEG_RADS; lon1 *= DEG_RADS;
+    lat2 *= DEG_RADS; lon2 *= DEG_RADS;
+    double a = pow(sin((lat2 - lat1) / 2.0), 2.0) + cos(lat1) *
+               cos(lat2) * pow(sin((lon2 - lon1) / 2.0), 2.0);
+    double d = 2 * atan2(sqrt(a), sqrt(fabs(1 - a)));
     return d;
 }
 
 double
 cosines (double lat1, double lon1, double lat2, double lon2) {
     double a, b, d;
-    lon1 = lon1 * DEG_RADS;
-    lat1 = lat1 * DEG_RADS;
-    lon2 = lon2 * DEG_RADS;
-    lat2 = lat2 * DEG_RADS;
+    lat1 *= DEG_RADS; lon1 *= DEG_RADS;
+    lat2 *= DEG_RADS; lon2 *= DEG_RADS;
     a = sin(lat1) * sin(lat2);
     b = cos(lat1) * cos(lat2) * cos(lon2 - lon1);
     d = acos(a + b);
+    /* Antipodal coordinates result in NaN */
+    if (isnan(d))
+        return haversine(lat1, lon1, lat2, lon2);
     return d;
 }
 
