@@ -3,6 +3,7 @@ package Geo::Distance::XS;
 use strict;
 use warnings;
 
+use Carp qw(croak);
 use Geo::Distance;
 use XSLoader;
 
@@ -24,13 +25,20 @@ sub import {
     # Ensure the formula type is the same before and after import is called.
     *Geo::Distance::distance = sub {
         *Geo::Distance::distance = \&{'_distance_' . $_[0]->{formula}};
-        Geo::Distance::distance(@_);
+        &Geo::Distance::distance;
     };
 
+    my %formulae = map { $_ => undef } qw( cos gcd hsin mt polar tv );
     *Geo::Distance::formula = sub {
-        local $Carp::CarpLevel = 1;
-        $orig_formula_sub->(@_);
-        *Geo::Distance::distance = \&{'_distance_' . $_[0]->{formula}};
+        my $self = shift;
+        if (@_) {
+            my $formula = shift;
+            croak "Invalid formula: $formula"
+                unless exists $formulae{$formula};
+            *Geo::Distance::distance = \&{"_distance_$formula"};
+            $self->{formula} = $formula;
+        }
+        return $self->{formula};
     };
 }
 
