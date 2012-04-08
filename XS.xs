@@ -168,18 +168,7 @@ MODULE = Geo::Distance::XS    PACKAGE = Geo::Distance::XS
 PROTOTYPES: DISABLE
 
 void
-_distance_hsin (self, unit, lon1, lat1, lon2, lat2)
-    SV *self
-    SV *unit
-    NV lon1
-    NV lat1
-    NV lon2
-    NV lat2
-PPCODE:
-    XSRETURN_NV(_count_units(self, unit) * haversine(lat1, lon1, lat2, lon2));
-
-void
-_distance_cos (self, unit, lon1, lat1, lon2, lat2)
+_distance (self, unit, lon1, lat1, lon2, lat2)
     SV *self
     SV *unit
     NV lon1
@@ -187,40 +176,21 @@ _distance_cos (self, unit, lon1, lat1, lon2, lat2)
     NV lon2
     NV lat2
 ALIAS:
-    _distance_mt = 1
-PPCODE:
-    XSRETURN_NV(_count_units(self, unit) * cosines(lat1, lon1, lat2, lon2));
-
-void
-_distance_polar (self, unit, lon1, lat1, lon2, lat2)
-    SV *self
-    SV *unit
-    NV lon1
-    NV lat1
-    NV lon2
-    NV lat2
-PPCODE:
-    XSRETURN_NV(_count_units(self, unit) * polar(lat1, lon1, lat2, lon2));
-
-void
-_distance_gcd (self, unit, lon1, lat1, lon2, lat2)
-    SV *self
-    SV *unit
-    NV lon1
-    NV lat1
-    NV lon2
-    NV lat2
-PPCODE:
-    XSRETURN_NV(_count_units(self, unit) *
-                great_circle(lat1, lon1, lat2, lon2));
-
-void
-_distance_tv (self, unit, lon1, lat1, lon2, lat2)
-    SV *self
-    SV *unit
-    NV lon1
-    NV lat1
-    NV lon2
-    NV lat2
-PPCODE:
-    XSRETURN_NV(_count_units(self, unit) * vincenty(lat1, lon1, lat2, lon2));
+    _distance_hsin = 1
+    _distance_cos = 2
+    _distance_mt = 3
+    _distance_tv = 4
+    _distance_gcd = 5
+    _distance_polar = 6
+PREINIT:
+    double (*func)(double, double, double, double);
+CODE:
+    switch (ix) {
+        case 1: func = &haversine; break;
+        case 2:
+        case 3: func = &cosines; break;
+        case 4: func = &vincenty; break;
+        case 5: func = &great_circle; break;
+        case 6: func = &polar; break;
+    }
+    XSRETURN_NV(_count_units(self, unit) * (*func)(lat1, lon1, lat2, lon2));
