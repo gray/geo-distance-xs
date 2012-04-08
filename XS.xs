@@ -14,7 +14,7 @@
 #define M_PI_2 1.57079632679489661923132169163975144
 #endif
 
-const double DEG_RADS = M_PI / 180.0;
+const double DEG_RADS = M_PI / 180.;
 
 static void
 my_croak (char* pat, ...) {
@@ -44,9 +44,9 @@ double
 haversine (double lat1, double lon1, double lat2, double lon2) {
     lat1 *= DEG_RADS; lon1 *= DEG_RADS;
     lat2 *= DEG_RADS; lon2 *= DEG_RADS;
-    double a = pow(sin((lat2 - lat1) / 2.0), 2.0) + cos(lat1) *
-               cos(lat2) * pow(sin((lon2 - lon1) / 2.0), 2.0);
-    double d = 2.0 * atan2(sqrt(a), sqrt(fabs(1.0 - a)));
+    double a = pow(sin((lat2 - lat1) / 2.), 2.) + cos(lat1) *
+               cos(lat2) * pow(sin((lon2 - lon1) / 2.), 2.);
+    double d = 2. * atan2(sqrt(a), sqrt(fabs(1. - a)));
     return d;
 }
 
@@ -69,7 +69,7 @@ polar (double lat1, double lon1, double lat2, double lon2) {
     double a = M_PI_2 - lat1 * DEG_RADS;
     double b = M_PI_2 - lat2 * DEG_RADS;
     double dlon = (lon2 - lon1) * DEG_RADS;
-    double d = sqrt(pow(a, 2.0) + pow(b, 2.0) - 2.0 * a * b * cos(dlon));
+    double d = sqrt(pow(a, 2.) + pow(b, 2.) - 2. * a * b * cos(dlon));
     return d;
 }
 
@@ -77,25 +77,25 @@ double
 great_circle (double lat1, double lon1, double lat2 , double lon2) {
     lat1 *= DEG_RADS; lon1 *= DEG_RADS;
     lat2 *= DEG_RADS; lon2 *= DEG_RADS;
-    double a = pow(sin((lat2 - lat1) / 2.0), 2.0) + cos(lat1) *
-               cos(lat2) * pow(sin((lon2 - lon1) / 2.0), 2.0);
-    double d = 2.0 * asin(sqrt(a));
+    double a = pow(sin((lat2 - lat1) / 2.), 2.) + cos(lat1) *
+               cos(lat2) * pow(sin((lon2 - lon1) / 2.), 2.);
+    double d = 2. * asin(sqrt(a));
     return d;
 }
 
 double
 vincenty (double lat1, double lon1, double lat2 , double lon2) {
-    const double MAJOR_RADIUS = 6378137.0 / 6370997.0;
-    const double MINOR_RADIUS = 6356752.3142 / 6370997.0;
+    const double MAJOR_RADIUS = 6378137. / 6370997.;
+    const double MINOR_RADIUS = 6356752.3142 / 6370997.;
     const double FLATTENING = (MAJOR_RADIUS - MINOR_RADIUS) / MAJOR_RADIUS;
 
     double dlon = (lon2 - lon1) * DEG_RADS;
-    double u1 = atan((1.0 - FLATTENING) * tan(lat1 * DEG_RADS));
-    double u2 = atan((1.0 - FLATTENING) * tan(lat2 * DEG_RADS));
+    double u1 = atan((1. - FLATTENING) * tan(lat1 * DEG_RADS));
+    double u2 = atan((1. - FLATTENING) * tan(lat2 * DEG_RADS));
     double sin_u1 = sin(u1), cos_u1 = cos(u1);
     double sin_u2 = sin(u2), cos_u2 = cos(u2);
 
-    double lambda = dlon, lambda_p = 2.0 * M_PI;
+    double lambda = dlon, lambda_p = 2. * M_PI;
     int iter_limit = 100;
 
     double sin_sigma, cos_sigma;
@@ -110,36 +110,36 @@ vincenty (double lat1, double lon1, double lat2 , double lon2) {
         sin_sigma = sqrt((cos_u2 * sin_lambda) * (cos_u2 * sin_lambda) +
                          (cos_u1 * sin_u2 - sin_u1 * cos_u2 * cos_lambda) *
                          (cos_u1 * sin_u2-sin_u1 * cos_u2 * cos_lambda));
-        if (sin_sigma == 0.0) {
-            return 0.0;
+        if (sin_sigma == 0.) {
+            return 0.;
         }
         cos_sigma = sin_u1 * sin_u2 + cos_u1 * cos_u2 * cos_lambda;
         sigma = atan2(sin_sigma, cos_sigma);
         alpha = asin(cos_u1 * cos_u2 * sin_lambda / sin_sigma);
         cos_sq_alpha = cos(alpha) * cos(alpha);
-        cos_sigma_m = cos_sigma - 2.0 * sin_u1 * sin_u2 / cos_sq_alpha;
+        cos_sigma_m = cos_sigma - 2. * sin_u1 * sin_u2 / cos_sq_alpha;
         if (isnan(cos_sigma_m)) {
-            cos_sigma_m = 0.0;
+            cos_sigma_m = 0.;
         }
-        c = FLATTENING / 16.0 * cos_sq_alpha *
-            (4.0 + FLATTENING * (4.0 - 3.0 * cos_sq_alpha));
+        c = FLATTENING / 16. * cos_sq_alpha *
+            (4. + FLATTENING * (4. - 3. * cos_sq_alpha));
         lambda_p = lambda;
-        lambda = dlon + (1.0 - c) * FLATTENING * sin(alpha) * (sigma + c *
-                 sin_sigma * (cos_sigma_m + c * cos_sigma * (-1.0 + 2.0 *
+        lambda = dlon + (1. - c) * FLATTENING * sin(alpha) * (sigma + c *
+                 sin_sigma * (cos_sigma_m + c * cos_sigma * (-1. + 2. *
                  cos_sigma_m * cos_sigma_m)));
     }
     if (! iter_limit)
-        return 0.0;
+        return 0.;
 
     u_sq = cos_sq_alpha * (MAJOR_RADIUS * MAJOR_RADIUS - MINOR_RADIUS *
            MINOR_RADIUS) / (MINOR_RADIUS * MINOR_RADIUS);
-    a = 1.0 + u_sq / 16384.0 * (4096.0 + u_sq * (-768.0 + u_sq *
-               (320.0 - 175.0 * u_sq)));
-    b = u_sq / 1024.0 * (256.0 + u_sq * (-128.0 + u_sq * (74.0 - 47.0 * u_sq)));
+    a = 1. + u_sq / 16384. * (4096. + u_sq * (-768. + u_sq *
+               (320. - 175. * u_sq)));
+    b = u_sq / 1024. * (256. + u_sq * (-128. + u_sq * (74. - 47. * u_sq)));
     delta_sigma = b * sin_sigma * (cos_sigma_m + b / 4 * (cos_sigma *
-                  (-1.0 + 2.0 * cos_sigma_m * cos_sigma_m) - b / 6.0 *
-                  cos_sigma_m * (- 3.0 + 4.0 * sin_sigma * sin_sigma) *
-                  (-3.0 + 4.0 * cos_sigma_m * cos_sigma_m)));
+                  (-1. + 2. * cos_sigma_m * cos_sigma_m) - b / 6. *
+                  cos_sigma_m * (- 3. + 4. * sin_sigma * sin_sigma) *
+                  (-3. + 4. * cos_sigma_m * cos_sigma_m)));
     d = MINOR_RADIUS * a * (sigma - delta_sigma);
     return d;
 }
