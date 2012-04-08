@@ -28,13 +28,15 @@ sub import {
         &Geo::Distance::distance;
     };
 
-    my %formulae = map { $_ => undef } qw( cos gcd hsin mt polar tv );
+    our @FORMULAS = qw( cos gcd hsin mt polar tv );
+    my %formulas = map { $_ => undef } @FORMULAS;
+
     *Geo::Distance::formula = sub {
         my $self = shift;
         if (@_) {
             my $formula = shift;
             croak "Invalid formula: $formula"
-                unless exists $formulae{$formula};
+                unless exists $formulas{$formula};
             *Geo::Distance::distance = \&{"_distance_$formula"};
             $self->{formula} = $formula;
         }
