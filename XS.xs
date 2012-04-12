@@ -54,10 +54,9 @@ double
 cosines (double lat1, double lon1, double lat2, double lon2) {
     lat1 *= DEG_RADS; lon1 *= DEG_RADS;
     lat2 *= DEG_RADS; lon2 *= DEG_RADS;
-    double a, b, d;
-    a = sin(lat1) * sin(lat2);
-    b = cos(lat1) * cos(lat2) * cos(lon2 - lon1);
-    d = acos(a + b);
+    double a = sin(lat1) * sin(lat2);
+    double b = cos(lat1) * cos(lat2) * cos(lon2 - lon1);
+    double d = acos(a + b);
     /* Antipodal coordinates result in NaN */
     if (isnan(d))
         return haversine(lat1, lon1, lat2, lon2);
@@ -144,6 +143,46 @@ vincenty (double lat1, double lon1, double lat2 , double lon2) {
     return d;
 }
 
+double
+andoyer_lambert_thomas (double lat1, double lon1, double lat2, double lon2) {
+    /* WGS 84 Ellipsoid */
+    const double A = 6378137. / 6370997.;
+    const double F = 1. / 298.257223563 / 6370997.;
+    /* Sphere with equal meridian length */
+    const double RM = 6367449.14582342 / 6370997.;
+
+    double f = 0.5 * (lat2 + lat1) * DEG_RADS;
+    double g = 0.5 * (lat2 - lat1) * DEG_RADS;
+    double l = 0.5 * (lon2 - lon1) * DEG_RADS;
+
+    double sf = sin(f), sg = sin(g), sl = sin(l);
+    double s2f = sf * sf, s2g = sg * sg, s2l = sl * sl;
+    double c2f = 1. - s2f, c2g = 1. - s2g, c2l = 1. - s2l;
+
+    double s2 = s2g * c2l + c2f * s2l;
+    double c2 = c2g * c2l + s2f * s2l;
+
+    double s, c, omega, rr, aa, bb, pp, qq, d2, qp, eps1, eps2;
+
+    if (s2 == 0.) return 0.;
+    if (c2 == 0.) return M_PI * RM;
+
+    s = sqrt(s2), c = sqrt(c2);
+    omega = atan2(s, c);
+    rr = s * c;
+    aa = s2g * c2f / s2 + s2f * c2g / c2;
+    bb = s2g * c2f / s2 - s2f * c2g / c2;
+    pp = rr / omega;
+    qq = omega / rr;
+    d2 = s2 - c2;
+    qp = qq + 6. * pp;
+    eps1 = 0.5 * F * (-aa - 3. * bb * pp);
+    eps2 = 0.25 * F * F * ((-qp * bb + (-3.75 + d2 * (qq + 3.75 * pp)) *
+            aa + 4. - d2 * qq) * aa - (7.5 * d2 * bb * pp - qp) * bb);
+
+    return 2. * omega * A * (1. + eps1 + eps2);
+}
+
 /* TODO: add more guards against unexpected data */
 double
 _count_units (SV *self, SV *unit) {
@@ -182,6 +221,7 @@ ALIAS:
     _distance_tv = 4
     _distance_gcd = 5
     _distance_polar = 6
+    _distance_alt = 7
 PREINIT:
     double (*func)(double, double, double, double);
 CODE:
@@ -192,5 +232,6 @@ CODE:
         case 4: func = &vincenty; break;
         case 5: func = &great_circle; break;
         case 6: func = &polar; break;
+        case 7: func = &andoyer_lambert_thomas; break;
     }
     XSRETURN_NV(_count_units(self, unit) * (*func)(lat1, lon1, lat2, lon2));

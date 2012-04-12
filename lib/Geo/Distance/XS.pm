@@ -22,7 +22,7 @@ BEGIN {
 sub import {
     no warnings qw(redefine);
 
-    our @FORMULAS = qw( cos gcd hsin mt polar tv );
+    our @FORMULAS = qw( alt cos gcd hsin mt polar tv );
     my %formulas = map { $_ => \&{"_distance_$_"} } @FORMULAS;
 
     # TODO: move this into XS.
@@ -71,6 +71,15 @@ that module for usage.
 
 NOTE: As of version 0.13, Geo::Distance automatically uses this module if
 it is installed.
+
+=head1 FORMULAS
+
+In addition to the formulas offered in C<Geo::Distance>, this module
+implements the additional formulas:
+
+=head2 alt: Andoyer-Lambert-Thomas Formula
+
+This is faster than the Vincenty formula, but trades a bit of accuracy.
 
 =head1 PERFORMANCE
 
@@ -165,6 +174,8 @@ These are the results on a MacBook 2GHz with Perl 5.12.2:
 =head1 SEE ALSO
 
 L<Geo::Distance>
+
+L<http://blogs.esri.com/esri/apl/2010/09/28/fast-times-at-geodesic-high/>
 
 =head1 REQUESTS AND BUGS
 
