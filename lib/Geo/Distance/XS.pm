@@ -22,22 +22,17 @@ BEGIN {
 sub import {
     no warnings qw(redefine);
 
-    # Ensure the formula type is the same before and after import is called.
-    *Geo::Distance::distance = sub {
-        *Geo::Distance::distance = \&{'_distance_' . $_[0]->{formula}};
-        &Geo::Distance::distance;
-    };
-
     our @FORMULAS = qw( cos gcd hsin mt polar tv );
-    my %formulas = map { $_ => undef } @FORMULAS;
+    my %formulas = map { $_ => \&{"_distance_$_"} } @FORMULAS;
+
+    # TODO: move this into XS.
+    *Geo::Distance::distance = sub { &{$formulas{$_[0]->{formula}}} };
 
     *Geo::Distance::formula = sub {
         my $self = shift;
         if (@_) {
             my $formula = shift;
-            croak "Invalid formula: $formula"
-                unless exists $formulas{$formula};
-            *Geo::Distance::distance = \&{"_distance_$formula"};
+            croak "Invalid formula: $formula" unless $formulas{$formula};
             $self->{formula} = $formula;
         }
         return $self->{formula};
@@ -173,7 +168,7 @@ L<Geo::Distance>
 
 =head1 REQUESTS AND BUGS
 
-Please report any bugs or feature requests to 
+Please report any bugs or feature requests to
 L<http://rt.cpan.org/Public/Bug/Report.html?Queue=Geo-Distance-XS>. I will be
 notified, and then you'll automatically be notified of progress on your bug as
 I make changes.
