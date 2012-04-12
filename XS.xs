@@ -44,9 +44,10 @@ double
 haversine (double lat1, double lon1, double lat2, double lon2) {
     lat1 *= DEG_RADS; lon1 *= DEG_RADS;
     lat2 *= DEG_RADS; lon2 *= DEG_RADS;
-    double a = pow(sin((lat2 - lat1) / 2.), 2.) + cos(lat1) *
-               cos(lat2) * pow(sin((lon2 - lon1) / 2.), 2.);
-    double d = 2. * atan2(sqrt(a), sqrt(fabs(1. - a)));
+    double a = sin(0.5 * (lat2 - lat1));
+    double b = sin(0.5 * (lon2 - lon1));
+    double c = a * a + cos(lat1) * cos(lat2) * b * b;
+    double d = 2. * atan2(sqrt(c), sqrt(fabs(1. - c)));
     return d;
 }
 
@@ -68,7 +69,7 @@ polar (double lat1, double lon1, double lat2, double lon2) {
     double a = M_PI_2 - lat1 * DEG_RADS;
     double b = M_PI_2 - lat2 * DEG_RADS;
     double dlon = (lon2 - lon1) * DEG_RADS;
-    double d = sqrt(pow(a, 2.) + pow(b, 2.) - 2. * a * b * cos(dlon));
+    double d = sqrt(a * a + b * b - 2. * a * b * cos(dlon));
     return d;
 }
 
@@ -76,9 +77,10 @@ double
 great_circle (double lat1, double lon1, double lat2 , double lon2) {
     lat1 *= DEG_RADS; lon1 *= DEG_RADS;
     lat2 *= DEG_RADS; lon2 *= DEG_RADS;
-    double a = pow(sin((lat2 - lat1) / 2.), 2.) + cos(lat1) *
-               cos(lat2) * pow(sin((lon2 - lon1) / 2.), 2.);
-    double d = 2. * asin(sqrt(a));
+    double a = sin(0.5 * (lat2 - lat1));
+    double b = sin(0.5 * (lon2 - lon1));
+    double c = a * a + cos(lat1) * cos(lat2) * b * b;
+    double d = 2. * asin(sqrt(c));
     return d;
 }
 
@@ -120,7 +122,7 @@ vincenty (double lat1, double lon1, double lat2 , double lon2) {
         if (isnan(cos_sigma_m)) {
             cos_sigma_m = 0.;
         }
-        c = FLATTENING / 16. * cos_sq_alpha *
+        c = 0.0625 * FLATTENING * cos_sq_alpha *
             (4. + FLATTENING * (4. - 3. * cos_sq_alpha));
         lambda_p = lambda;
         lambda = dlon + (1. - c) * FLATTENING * sin(alpha) * (sigma + c *
