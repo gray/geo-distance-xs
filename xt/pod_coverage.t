@@ -7,5 +7,5 @@ eval "use Test::Pod::Coverage 1.00; 1" or do {
 };
 
 all_pod_coverage_ok({
-    also_private => [qw( unimport )],
+    also_private => [qw( unimport distance )],
 });
