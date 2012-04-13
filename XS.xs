@@ -16,6 +16,8 @@
 
 const double DEG_RADS = M_PI / 180.;
 
+static HV *formula_indexes;
+
 static void
 my_croak (char* pat, ...) {
     va_list args;
@@ -208,32 +210,48 @@ MODULE = Geo::Distance::XS    PACKAGE = Geo::Distance::XS
 
 PROTOTYPES: DISABLE
 
+BOOT:
+    formula_indexes = newHV();
+    (void)hv_stores(formula_indexes, "hsin", newSViv(1));
+    (void)hv_stores(formula_indexes, "cos", newSViv(2));
+    (void)hv_stores(formula_indexes, "mt", newSViv(2));
+    (void)hv_stores(formula_indexes, "tv", newSViv(3));
+    (void)hv_stores(formula_indexes, "gcd", newSViv(4));
+    (void)hv_stores(formula_indexes, "polar", newSViv(5));
+    (void)hv_stores(formula_indexes, "alt", newSViv(6));
+
+    /* Set the package variable @FORMULAS */
+    AV *formulas = get_av("Geo::Distance::XS::FORMULAS", GV_ADD);
+    (void)hv_iterinit(formula_indexes);
+    HE *ent;
+    while ((ent = hv_iternext(formula_indexes)))
+        av_push(formulas, SvREFCNT_inc(HeSVKEY_force(ent)));
+    sortsv(AvARRAY(formulas), av_len(formulas) + 1, Perl_sv_cmp);
+
 void
-_distance (self, unit, lon1, lat1, lon2, lat2)
+distance (self, unit, lon1, lat1, lon2, lat2)
     SV *self
     SV *unit
     NV lon1
     NV lat1
     NV lon2
     NV lat2
-ALIAS:
-    _distance_hsin = 1
-    _distance_cos = 2
-    _distance_mt = 3
-    _distance_tv = 4
-    _distance_gcd = 5
-    _distance_polar = 6
-    _distance_alt = 7
 PREINIT:
+    SV **key;
+    int index = 1;
     double (*func)(double, double, double, double);
 CODE:
-    switch (ix) {
+    key = hv_fetchs((HV *)SvRV(self), "formula", 0);
+    if (key) {
+        HE *ent = hv_fetch_ent(formula_indexes, *key, 0, 0);
+        if (ent) index = SvIV(HeVAL(ent));
+    }
+    switch (index) {
         case 1: func = &haversine; break;
-        case 2:
-        case 3: func = &cosines; break;
-        case 4: func = &vincenty; break;
-        case 5: func = &great_circle; break;
-        case 6: func = &polar; break;
-        case 7: func = &andoyer_lambert_thomas; break;
+        case 2: func = &cosines; break;
+        case 3: func = &vincenty; break;
+        case 4: func = &great_circle; break;
+        case 5: func = &polar; break;
+        case 6: func = &andoyer_lambert_thomas; break;
     }
     XSRETURN_NV(_count_units(self, unit) * (*func)(lat1, lon1, lat2, lon2));

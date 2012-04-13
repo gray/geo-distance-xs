@@ -1,11 +1,12 @@
 use strict;
 use warnings;
 use Geo::Distance::XS;
-use Test::More tests => 3;
+use Test::More;
 
 my $geo = Geo::Distance->new;
-isa_ok($geo, 'Geo::Distance', 'new');
-can_ok('Geo::Distance', qw(distance formula));
-can_ok('Geo::Distance::XS', qw(
-    _distance_hsin _distance_cos _distance_polar _distance_gcd _distance_tv
-));
+isa_ok $geo, 'Geo::Distance', 'new';
+can_ok 'Geo::Distance', qw(distance formula);
+ok defined @Geo::Distance::XS::FORMULAS;
+cmp_ok scalar @Geo::Distance::XS::FORMULAS, '>', 2;
+
+done_testing;

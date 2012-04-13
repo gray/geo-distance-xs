@@ -1,16 +1,13 @@
 use strict;
 use warnings;
-use Test::More tests => 2;
+use Test::More;
 
 eval "use Geo::Distance 0.16; 1" or do {
     plan skip_all => 'Geo::Distance >= 0.16 is not installed.';
 };
 
+# Tests that Geo::Distance automatically loads the XS version.
 my $geo = Geo::Distance->new;
+is defined $Geo::Distance::XS::VERSION, 1, 'PP version loads XS';
 
-is(defined $Geo::Distance::XS::VERSION, 1, 'xs $VERSION defined');
-
-is(
-    defined &Geo::Distance::XS::_distance_hsin, 1,
-    'XS::_distance_hsin defined'
-);
+done_testing;

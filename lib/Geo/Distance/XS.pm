@@ -21,18 +21,17 @@ BEGIN {
 
 sub import {
     no warnings qw(redefine);
+    no strict qw(refs);
 
-    our @FORMULAS = qw( alt cos gcd hsin mt polar tv );
-    my %formulas = map { $_ => \&{"_distance_$_"} } @FORMULAS;
+    my %formulas = map { $_ => undef } @{__PACKAGE__.'::FORMULAS'};
 
-    # TODO: move this into XS.
-    *Geo::Distance::distance = sub { &{$formulas{$_[0]->{formula}}} };
-
+    *Geo::Distance::distance = \&{__PACKAGE__.'::distance'};
     *Geo::Distance::formula = sub {
         my $self = shift;
         if (@_) {
             my $formula = shift;
-            croak "Invalid formula: $formula" unless $formulas{$formula};
+            croak "Invalid formula: $formula"
+                unless exists $formulas{$formula};
             $self->{formula} = $formula;
         }
         return $self->{formula};
