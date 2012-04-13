@@ -1,5 +1,12 @@
 Revision history for Geo-Distance-XS
 
+0.10  Fri Apr 13 11:57:14 UTC 2012
+    - Fixed floating point errors.
+    - Fixed for antipodal coordinates.
+    - Fixed formulas for use with multiple Geo::Distance objects.
+    - Added new formula- alt: Andoyer-Lambert-Thomas.
+    - Updated benchmarks.
+
 0.09  Mon Aug  1 21:49:37 UTC 2011
     - Required XSLoader; stopped falling back to DynaLoader.
 
