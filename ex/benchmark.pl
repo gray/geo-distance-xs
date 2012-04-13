@@ -50,7 +50,7 @@ my %gis_formula = (
     tv    => 'Vincenty',
 );
 
-for my $formula (qw(hsin polar cos gcd mt tv)) {
+for my $formula (qw(hsin tv polar cos gcd mt)) {
     print "---- [ Formula: $formula ] ------------------------------------\n";
 
     $geo->formula($formula);
@@ -65,12 +65,10 @@ for my $formula (qw(hsin polar cos gcd mt tv)) {
     printf "gis_fast - distance from LA to NY: %s miles\n", gis();
     print "\n";
 
-    my $benchmarks = timethese - 1, {
+    cmpthese - 1, {
         perl     => \&geo,
         xs       => \&geo,
         gis_fast => \&gis,
     };
-
-    cmpthese $benchmarks;
     print "\n";
 }
