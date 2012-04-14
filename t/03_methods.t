@@ -10,7 +10,7 @@ for my $f (@formulas) {
 
     my @coords = (-118.243103, 34.159545, -73.987427, 40.853293);
     my %expected = (
-        map({ $_ => 2443 } @formulas), polar => 2766, tv => 2448, alt => 2445,
+        map({ $_ => 2443 } @formulas), polar => 2766, tv => 2448, alt => 2448,
     );
     my $d = $geo->distance(mile => @coords);
     is int $d, $expected{$f}, "$f: distance from LA to NY";

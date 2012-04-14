@@ -16,6 +16,14 @@
 
 const double DEG_RADS = M_PI / 180.;
 
+/* From Geo::Distance */
+const double KILOMETER_RHO = 6371.64;
+
+/* WGS 84 Ellipsoid */
+const double A = 6378137.;
+const double B = 6356752.314245;
+const double F = 1. / 298.257223563;
+
 static HV *formula_indexes;
 
 static void
@@ -88,13 +96,9 @@ great_circle (double lat1, double lon1, double lat2 , double lon2) {
 
 double
 vincenty (double lat1, double lon1, double lat2 , double lon2) {
-    const double MAJOR_RADIUS = 6378137. / 6370997.;
-    const double MINOR_RADIUS = 6356752.3142 / 6370997.;
-    const double FLATTENING = (MAJOR_RADIUS - MINOR_RADIUS) / MAJOR_RADIUS;
-
     double dlon = (lon2 - lon1) * DEG_RADS;
-    double u1 = atan((1. - FLATTENING) * tan(lat1 * DEG_RADS));
-    double u2 = atan((1. - FLATTENING) * tan(lat2 * DEG_RADS));
+    double u1 = atan((1. - F) * tan(lat1 * DEG_RADS));
+    double u2 = atan((1. - F) * tan(lat2 * DEG_RADS));
     double sin_u1 = sin(u1), cos_u1 = cos(u1);
     double sin_u2 = sin(u2), cos_u2 = cos(u2);
 
@@ -124,36 +128,32 @@ vincenty (double lat1, double lon1, double lat2 , double lon2) {
         if (isnan(cos_sigma_m)) {
             cos_sigma_m = 0.;
         }
-        c = 0.0625 * FLATTENING * cos_sq_alpha *
-            (4. + FLATTENING * (4. - 3. * cos_sq_alpha));
+        c = 0.0625 * F * cos_sq_alpha *
+            (4. + F * (4. - 3. * cos_sq_alpha));
         lambda_p = lambda;
-        lambda = dlon + (1. - c) * FLATTENING * sin(alpha) * (sigma + c *
+        lambda = dlon + (1. - c) * F * sin(alpha) * (sigma + c *
                  sin_sigma * (cos_sigma_m + c * cos_sigma * (-1. + 2. *
                  cos_sigma_m * cos_sigma_m)));
     }
     if (! iter_limit)
         return 0.;
 
-    u_sq = cos_sq_alpha * (MAJOR_RADIUS * MAJOR_RADIUS - MINOR_RADIUS *
-           MINOR_RADIUS) / (MINOR_RADIUS * MINOR_RADIUS);
+    u_sq = cos_sq_alpha * (A * A / (B * B) - 1.);
     a = 1. + u_sq / 16384. * (4096. + u_sq * (-768. + u_sq *
                (320. - 175. * u_sq)));
     b = u_sq / 1024. * (256. + u_sq * (-128. + u_sq * (74. - 47. * u_sq)));
-    delta_sigma = b * sin_sigma * (cos_sigma_m + b / 4 * (cos_sigma *
+    delta_sigma = b * sin_sigma * (cos_sigma_m + b / 4. * (cos_sigma *
                   (-1. + 2. * cos_sigma_m * cos_sigma_m) - b / 6. *
                   cos_sigma_m * (- 3. + 4. * sin_sigma * sin_sigma) *
                   (-3. + 4. * cos_sigma_m * cos_sigma_m)));
-    d = MINOR_RADIUS * a * (sigma - delta_sigma);
-    return d;
+    d = B * a * (sigma - delta_sigma);
+    return d / KILOMETER_RHO * 0.001;
 }
 
 double
 andoyer_lambert_thomas (double lat1, double lon1, double lat2, double lon2) {
-    /* WGS 84 Ellipsoid */
-    const double A = 6378137. / 6370997.;
-    const double F = 1. / 298.257223563 / 6370997.;
     /* Sphere with equal meridian length */
-    const double RM = 6367449.14582342 / 6370997.;
+    const double RM = 6367449.14582342;
 
     double f = 0.5 * (lat2 + lat1) * DEG_RADS;
     double g = 0.5 * (lat2 - lat1) * DEG_RADS;
@@ -169,7 +169,7 @@ andoyer_lambert_thomas (double lat1, double lon1, double lat2, double lon2) {
     double s, c, omega, rr, aa, bb, pp, qq, d2, qp, eps1, eps2;
 
     if (s2 == 0.) return 0.;
-    if (c2 == 0.) return M_PI * RM;
+    if (c2 == 0.) return M_PI * RM / KILOMETER_RHO * 0.001;
 
     s = sqrt(s2), c = sqrt(c2);
     omega = atan2(s, c);
@@ -184,7 +184,8 @@ andoyer_lambert_thomas (double lat1, double lon1, double lat2, double lon2) {
     eps2 = 0.25 * F * F * ((-qp * bb + (-3.75 + d2 * (qq + 3.75 * pp)) *
             aa + 4. - d2 * qq) * aa - (7.5 * d2 * bb * pp - qp) * bb);
 
-    return 2. * omega * A * (1. + eps1 + eps2);
+    double d = 2. * omega * A * (1. + eps1 + eps2);
+    return d / KILOMETER_RHO * 0.001;
 }
 
 /* TODO: add more guards against unexpected data */
