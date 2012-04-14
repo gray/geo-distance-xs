@@ -92,19 +92,19 @@ are the results on a MacBook 2GHz with Perl 5.14.2:
     gis_fast - distance from LA to NY: 2443.08796228363 miles
 
                 Rate gis_fast     perl       xs
-    gis_fast  23209/s       --     -72%     -98%
-    perl      82707/s     256%       --     -92%
-    xs       998734/s    4203%    1108%       --
+    gis_fast   24802/s       --     -70%     -98%
+    perl       81919/s     230%       --     -92%
+    xs       1003704/s    3947%    1125%       --
 
     ---- [ Formula: tv ] ------------------------------------
     perl     - distance from LA to NY: 2448.24135235512 miles
-    xs       - distance from LA to NY: 2448.48844386882 miles
+    xs       - distance from LA to NY: 2448.2413523656 miles
     gis_fast - distance from LA to NY: 2448.24135235512 miles
 
                 Rate     perl gis_fast       xs
-    perl      18797/s       --     -13%     -95%
-    gis_fast  21525/s      15%       --     -94%
-    xs       344063/s    1730%    1498%       --
+    perl      18101/s       --     -19%     -95%
+    gis_fast  22330/s      23%       --     -94%
+    xs       345717/s    1810%    1448%       --
 
     ---- [ Formula: polar ] ------------------------------------
     perl     - distance from LA to NY: 2766.02509696782 miles
@@ -112,9 +112,9 @@ are the results on a MacBook 2GHz with Perl 5.14.2:
     gis_fast - distance from LA to NY: 2766.02509696782 miles
 
                 Rate gis_fast     perl       xs
-    gis_fast   19166/s       --     -78%     -98%
+    gis_fast   19200/s       --     -78%     -98%
     perl       87682/s     357%       --     -93%
-    xs       1226609/s    6300%    1299%       --
+    xs       1214700/s    6227%    1285%       --
 
     ---- [ Formula: cos ] ------------------------------------
     perl     - distance from LA to NY: 2443.08796228363 miles
@@ -122,9 +122,9 @@ are the results on a MacBook 2GHz with Perl 5.14.2:
     gis_fast - distance from LA to NY: 2443.08796228363 miles
 
                 Rate gis_fast     perl       xs
-    gis_fast   23424/s       --     -71%     -98%
-    perl       80388/s     243%       --     -93%
-    xs       1117090/s    4669%    1290%       --
+    gis_fast   24435/s       --     -69%     -98%
+    perl       78913/s     223%       --     -93%
+    xs       1147836/s    4597%    1355%       --
 
     ---- [ Formula: gcd ] ------------------------------------
     perl     - distance from LA to NY: 2443.08796228363 miles
@@ -132,9 +132,9 @@ are the results on a MacBook 2GHz with Perl 5.14.2:
     gis_fast - distance from LA to NY: 2443.08796228363 miles
 
                 Rate gis_fast     perl       xs
-    gis_fast   18101/s       --     -75%     -98%
-    perl       73770/s     308%       --     -93%
-    xs       1092266/s    5934%    1381%       --
+    gis_fast   18270/s       --     -75%     -98%
+    perl       74472/s     308%       --     -93%
+    xs       1102769/s    5936%    1381%       --
 
     ---- [ Formula: mt ] ------------------------------------
     perl     - distance from LA to NY: 2443.08796228363 miles
@@ -142,66 +142,66 @@ are the results on a MacBook 2GHz with Perl 5.14.2:
     gis_fast - distance from LA to NY: 2443.08796228363 miles
 
                 Rate gis_fast     perl       xs
-    gis_fast   17454/s       --     -75%     -98%
-    perl       70149/s     302%       --     -94%
-    xs       1147836/s    6476%    1536%       --
+    gis_fast   17935/s       --     -75%     -98%
+    perl       71739/s     300%       --     -94%
+    xs       1135525/s    6231%    1483%       --
 
 This distribution contains another benchmarking script which compares
 only the XS formulas over several different coordinates:
 
-            Rate    tv  hsin   alt    mt   cos   gcd polar
-    tv     16593/s    --  -90%  -91%  -91%  -91%  -91%  -92%
-    hsin  170328/s  927%    --   -4%   -7%   -7%  -13%  -17%
-    alt   177535/s  970%    4%    --   -3%   -3%   -9%  -14%
-    mt    182781/s 1002%    7%    3%    --   -1%   -6%  -11%
-    cos   183794/s 1008%    8%    4%    1%    --   -6%  -11%
-    gcd   194708/s 1073%   14%   10%    7%    6%    --   -6%
-    polar 206279/s 1143%   21%   16%   13%   12%    6%    --
+            Rate    tv  hsin   alt   cos    mt   gcd polar
+    tv     16906/s    --  -90%  -90%  -91%  -91%  -91%  -92%
+    hsin  165414/s  878%    --   -4%   -8%  -10%  -13%  -17%
+    alt   172032/s  918%    4%    --   -5%   -7%   -9%  -14%
+    cos   180326/s  967%    9%    5%    --   -2%   -5%  -10%
+    mt    184357/s  991%   11%    7%    2%    --   -3%   -8%
+    gcd   189253/s 1019%   14%   10%    5%    3%    --   -6%
+    polar 200386/s 1085%   21%   16%   11%    9%    6%    --
 
     Calculated length for short distance:
-        alt  : 40.3547210428874 miles
+        alt  : 40.3740136064528 miles
         cos  : 40.3095459813536 miles
         gcd  : 40.3095459813294 miles
         hsin : 40.3095459813294 miles
         mt   : 40.3095459813536 miles
         polar: 46.7467797109043 miles
-        tv   : 40.3780884309995 miles
+        tv   : 40.3740136384531 miles
 
     Calculated length for long distance:
-        alt  : 2445.82594045448 miles
+        alt  : 2448.24135691376 miles
         cos  : 2443.08796228363 miles
         gcd  : 2443.08796228363 miles
         hsin : 2443.08796228363 miles
         mt   : 2443.08796228363 miles
         polar: 2766.02509696782 miles
-        tv   : 2448.48844386882 miles
+        tv   : 2448.2413523656 miles
 
     Calculated length for nearly antipodes:
-        alt  : 12354.157484494 miles
+        alt  : 12340.6455133245 miles
         cos  : 12340.327635068 miles
         gcd  : 12340.327635068 miles
         hsin : 12340.327635068 miles
         mt   : 12340.327635068 miles
         polar: 12368.4764642469 miles
-        tv   : 12341.9938071999 miles
+        tv   : 12340.7483034002 miles
 
     Calculated length for antipodes:
-        alt  : 12431.1212380871 miles
+        alt  : 12429.86673988 miles
         cos  : 219.005548031861 miles
         gcd  : 12438.0476860875 miles
         hsin : 12438.0475680956 miles
         mt   : 219.005548031861 miles
         polar: 12438.0476860875 miles
-        tv   : 12371.4369809266 miles
+        tv   : 12370.1885059814 miles
 
     Calculated length for polar antipodes:
-        alt  : 12431.1212380871 miles
+        alt  : 12429.86673988 miles
         cos  : 12438.0476860875 miles
         gcd  : 12438.0476860875 miles
         hsin : 12438.0476860875 miles
         mt   : 12438.0476860875 miles
         polar: 12438.0476860875 miles
-        tv   : 12431.1212380419 miles
+        tv   : 12429.8667398787 miles
 
 =head1 SEE ALSO
 
