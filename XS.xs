@@ -242,6 +242,8 @@ PREINIT:
     int index = 1;
     double (*func)(double, double, double, double);
 CODE:
+    if (lat2 == lat1 && lon2 == lon1)
+        XSRETURN_NV(0.);
     key = hv_fetchs((HV *)SvRV(self), "formula", 0);
     if (key) {
         HE *ent = hv_fetch_ent(formula_indexes, *key, 0, 0);
