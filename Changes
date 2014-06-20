@@ -1,5 +1,8 @@
 Revision history for Geo-Distance-XS
 
+0.13  Fri Jun 20 07:10:41 UTC 2014
+    - Restored support for 5.6.2.
+
 0.12  Wed Jun 18 19:01:04 UTC 2014
     - Remove deprecated usage defined(@array) from a test case.
     - Optimized the case where both coordinates are identical.
