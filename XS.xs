@@ -24,8 +24,6 @@ const double A = 6378137.;
 const double B = 6356752.314245;
 const double F = 1. / 298.257223563;
 
-static HV *formula_indexes;
-
 static void
 my_croak (char* pat, ...) {
     va_list args;
@@ -211,24 +209,6 @@ MODULE = Geo::Distance::XS    PACKAGE = Geo::Distance::XS
 
 PROTOTYPES: DISABLE
 
-BOOT:
-    formula_indexes = newHV();
-    (void)hv_stores(formula_indexes, "hsin", newSViv(1));
-    (void)hv_stores(formula_indexes, "cos", newSViv(2));
-    (void)hv_stores(formula_indexes, "mt", newSViv(2));
-    (void)hv_stores(formula_indexes, "tv", newSViv(3));
-    (void)hv_stores(formula_indexes, "gcd", newSViv(4));
-    (void)hv_stores(formula_indexes, "polar", newSViv(5));
-    (void)hv_stores(formula_indexes, "alt", newSViv(6));
-
-    /* Set the package variable @FORMULAS */
-    AV *formulas = get_av("Geo::Distance::XS::FORMULAS", GV_ADD);
-    (void)hv_iterinit(formula_indexes);
-    HE *ent;
-    while ((ent = hv_iternext(formula_indexes)))
-        av_push(formulas, SvREFCNT_inc(HeSVKEY_force(ent)));
-    sortsv(AvARRAY(formulas), av_len(formulas) + 1, Perl_sv_cmp);
-
 void
 distance (self, unit, lon1, lat1, lon2, lat2)
     SV *self
@@ -244,11 +224,8 @@ PREINIT:
 CODE:
     if (lat2 == lat1 && lon2 == lon1)
         XSRETURN_NV(0.);
-    key = hv_fetchs((HV *)SvRV(self), "formula", 0);
-    if (key) {
-        HE *ent = hv_fetch_ent(formula_indexes, *key, 0, 0);
-        if (ent) index = SvIV(HeVAL(ent));
-    }
+    key = hv_fetchs((HV *)SvRV(self), "formula_index", 0);
+    if (key) index = SvIV(*key);
     switch (index) {
         case 1: func = &haversine; break;
         case 2: func = &cosines; break;
