@@ -186,6 +186,11 @@ andoyer_lambert_thomas (double lat1, double lon1, double lat2, double lon2) {
     return d / KILOMETER_RHO * 0.001;
 }
 
+double
+null_formula (double lat1, double lon1, double lat2, double lon2) {
+    return 0;
+}
+
 /* TODO: add more guards against unexpected data */
 double
 _count_units (SV *self, SV *unit) {
@@ -233,5 +238,6 @@ CODE:
         case 4: func = &great_circle; break;
         case 5: func = &polar; break;
         case 6: func = &andoyer_lambert_thomas; break;
+        case 7: func = &null_formula; break;
     }
     XSRETURN_NV(_count_units(self, unit) * (*func)(lat1, lon1, lat2, lon2));

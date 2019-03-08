@@ -19,7 +19,7 @@ BEGIN {
     $orig_formula_sub  = \&Geo::Distance::formula;
 }
 
-my %formulas; @formulas{qw(hsin cos mt tv gcd polar alt)} = (1, 2, 2..6);
+my %formulas; @formulas{qw(hsin cos mt tv gcd polar alt null)} = (1, 2, 2..7);
 our @FORMULAS = sort keys %formulas;
 
 sub import {
